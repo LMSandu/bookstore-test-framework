@@ -6,7 +6,7 @@ import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import lombok.RequiredArgsConstructor;
 import org.apache.http.HttpStatus;
-import toolsqa.bookstore.model.CreateUserResult;
+import toolsqa.bookstore.model.UserResult;
 import toolsqa.bookstore.model.User;
 
 import static io.restassured.RestAssured.given;
@@ -18,25 +18,28 @@ public class UserApiActions {
     RequestSpecification userBaseUri = given().baseUri("https://demoqa.com");
 
 
-    public CreateUserResult createUserBookstore(String userName, String password) {
+    public Response createUserBookstore(String userName, String password) {
 
         User user = new User(userName, password);
-        Response creationResult = userBaseUri
+        return userBaseUri
                 .contentType(ContentType.JSON)
                 .body(user)
                 .log().all()
                 .when().post("/Account/v1/User").prettyPeek();
 
-        if (creationResult.statusCode() == HttpStatus.SC_CREATED) {
-            return creationResult.as(CreateUserResult.class);
-        } else {
-            return null;
-        }
     }
 
     public void deleteUserBookstore(String userId) {
         String url = "/Account/v1/User/" + userId;
         userBaseUri.log().all().when().delete(url).prettyPeek().then().statusCode(HttpStatus.SC_UNAUTHORIZED);
+    }
+
+    public Response getUserWithBooksInfo(String userId){
+
+        return userBaseUri.queryParam("userId", userId)
+                .log().all()
+                .when().get("/Account/v1/User/}")
+                .prettyPeek();
     }
 
 }
