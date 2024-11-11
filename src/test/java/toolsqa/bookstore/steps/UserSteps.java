@@ -1,5 +1,6 @@
 package toolsqa.bookstore.steps;
 
+import io.cucumber.java.en.And;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import io.restassured.response.Response;
@@ -27,8 +28,9 @@ public class UserSteps {
     Response createUserResult;
     String userId;
 
-//ToDo: add method for verifying that user doesn't already exist and log outcomes using Log4J
-    @When("I create an user with the following details")
+    //ToDo: add method for verifying that user doesn't already exist and log outcomes using Log4J
+    //ToDo: use  password = RandomStringUtils.randomAscii(32); with private password attribute
+    @When("I create an user with the following details:")
     public void iCreateUser(List<Map<String, String>> users) {
         if (!users.isEmpty()) {
             users.forEach(user ->
@@ -39,14 +41,30 @@ public class UserSteps {
                         createUserResult = userApiActions.createUserBookstore(userName, password);
                         userId = createUserResult.as(UserResult.class).getUserID();
                     }
-
             );
         }
     }
 
-    @Then("the user is created")
+    @When("Authorization is done for user (.*) with password (.*)$")
+    public void userIsAuthorized(String username, String password) {
+        Response response = userApiActions.authorizeUser(username, password);
+        assertThat("The user is authorized.", response.getStatusCode(), is(HttpStatus.SC_OK));
+    }
+
+    @And("A token is generated for user (.*) with password (.*)$")
+    public void generateTokenForUser(String username, String password) {
+        Response response = userApiActions.generateTokenForUser(username, password);
+        assertThat(String.format("The token is generated for user %s.", username), response.getStatusCode(), is(HttpStatus.SC_OK));
+    }
+
+    @Then("The user is created")
     public void checkCreationOfUser() {
         assertThat("User was created", createUserResult.getStatusCode(), is(HttpStatus.SC_CREATED));
+    }
+
+    @Then("The user was not created")
+    public void checkUserNotCreated() {
+        assertThat("User was not created", createUserResult.getStatusCode(), is(HttpStatus.SC_NOT_ACCEPTABLE));
     }
 
     @When("I add the following books for user {}:")

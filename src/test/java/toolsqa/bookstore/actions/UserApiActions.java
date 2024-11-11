@@ -6,7 +6,6 @@ import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import lombok.RequiredArgsConstructor;
 import org.apache.http.HttpStatus;
-import toolsqa.bookstore.model.UserResult;
 import toolsqa.bookstore.model.User;
 
 import static io.restassured.RestAssured.given;
@@ -40,6 +39,28 @@ public class UserApiActions {
                 .log().all()
                 .when().get("/Account/v1/User/}")
                 .prettyPeek();
+    }
+
+    public Response authorizeUser(String userName, String password) {
+
+        User user = new User(userName, password);
+        return userBaseUri
+                .contentType(ContentType.JSON)
+                .body(user)
+                .log().all()
+                .when().post("/Account/v1/Authorized").prettyPeek();
+
+    }
+
+    public Response generateTokenForUser(String userName, String password) {
+
+        User user = new User(userName, password);
+        return userBaseUri
+                .contentType(ContentType.JSON)
+                .body(user)
+                .log().all()
+                .when().post("/Account/v1/GenerateToken").prettyPeek();
+
     }
 
 }
