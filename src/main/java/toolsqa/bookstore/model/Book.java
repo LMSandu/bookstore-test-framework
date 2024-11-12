@@ -30,9 +30,9 @@ public class Book {
     public String toString() {
         ObjectMapper objectMapper = new ObjectMapper();
         try {
-            objectMapper.writeValueAsString(this); //this este obiectul curent
+            objectMapper.writeValueAsString(this);
         } catch (JsonProcessingException e) {
-            return super.toString(); //super e parintele
+            return super.toString();
         }
         return "";
     }
