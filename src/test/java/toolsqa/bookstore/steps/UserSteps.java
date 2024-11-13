@@ -43,6 +43,9 @@ public class UserSteps {
                     }
             );
         }
+        else{
+            throw new RuntimeException("The users list is empty!");
+        }
     }
 
     @When("Authorization is done for user (.*) with password (.*)$")
